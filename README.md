@@ -128,11 +128,10 @@ localStorage.setItem('dsh-live2d-pet', '1')
 3. Paste `localStorage.setItem('dsh-live2d-pet', '1')` and press Enter
 4. Reload the page (`F5`)
 
-The pet then floats at the anchor position (default: bottom-right / above the
-composer). The setting persists across refreshes and server restarts — you only
-do this once per browser.
+The pet then floats at the bottom-right corner by default. The setting persists
+across refreshes and server restarts — you only do this once per browser.
 
-启用后宠物出现在锚定位置（默认：右下/输入框上方）。设置跨刷新和重启保留，每个浏览器只需设置一次。
+启用后宠物默认出现在右下角。设置跨刷新和重启保留，每个浏览器只需设置一次。
 
 To disable / 关闭：
 
@@ -163,16 +162,17 @@ localStorage.setItem('dsh-live2d-pet', '0')
 |---|---|---|
 | `model` | Path to the `.model3.json` under `assets/live2d/` | `haru/haru_greeter_t03.model3.json` |
 | `size` | Canvas size in px (the model is scaled to fit by height) | `320` |
-| `right` | Distance from the right edge when not anchored | `24` |
-| `bottom` | Distance from the bottom edge when not anchored | `20` |
-| `offsetX` / `offsetY` | Extra shift applied on top of the anchor position (for fine-tuning) | `0` |
+| `right` | Distance from the right edge (px) | `24` |
+| `bottom` | Distance from the bottom edge (px) | `100` |
+| `offsetX` / `offsetY` | Fine-tune from that corner (see note) | `0` |
 
-> The pet anchors to the chat composer (`[data-composer-seat]`) every frame and
-> follows internal chat scrolling; `right/bottom` are only used as fallbacks.
-> `offsetX/offsetY` are the knobs for final fine-tuning.
+> Default position is bottom-right using `right` / `bottom` (defaults `24` / `100`).
+> Positive `offsetX` moves the pet leftward (decreases `right`); positive `offsetY`
+> moves it upward (increases `bottom`). Drag still works; the drag offset is
+> session-only and is wiped each boot.
 
-> 宠物每帧锚定到聊天输入框（`[data-composer-seat]`）并跟随内部滚动；`right/bottom`
-> 只是兜底位置。微调用 `offsetX/offsetY`。
+> 默认用 `right` / `bottom`（默认 `24` / `100`）钉在右下角。正的 `offsetX` 往左移
+> （减小 `right`），正的 `offsetY` 往上移（增大 `bottom`）。仍可拖拽；拖拽偏移仅当次会话有效，每次启动清零。
 
 ---
 

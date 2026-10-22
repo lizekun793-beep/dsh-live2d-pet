@@ -429,8 +429,8 @@ function Live2DPetConfigSection() {
           num('fidgetSec', '空闲小动作间隔（秒）', 2, 60),
           num('offsetX', 'offsetX', -800, 800),
           num('offsetY', 'offsetY', -800, 800),
-          num('right', 'right 兜底', 0, 800),
-          num('bottom', 'bottom 兜底', 0, 800),
+          num('right', '距右边 (px)', 0, 800),
+          num('bottom', '距底边 (px)', 0, 800),
         ]),
         createElement(
           'label',
@@ -521,7 +521,6 @@ export function Live2DPet(props: Live2DPetProps) {
     let disposed = false
     let app: any = null
     let onMove: ((e: MouseEvent) => void) | null = null
-    let anchorRaf = 0
     let dragState: { startX: number; startY: number; baseX: number; baseY: number } | null = null
     let onDown: ((e: MouseEvent) => void) | null = null
     let onDragMove: ((e: MouseEvent) => void) | null = null
@@ -534,8 +533,14 @@ export function Live2DPet(props: Live2DPetProps) {
       if (disposed || !canvasRef.current) return
       const csize = size
       const canvas = canvasRef.current
-      canvas.style.right = `${cfg.right ?? 24}px`
-      canvas.style.bottom = `${cfg.bottom ?? 20}px`
+      const placeCorner = (): void => {
+        const off = dragOffsetRef.current
+        canvas.style.left = 'auto'
+        canvas.style.top = 'auto'
+        canvas.style.right = `${Math.max(4, Math.round((cfg.right ?? 24) - (cfg.offsetX ?? 0) - off.x))}px`
+        canvas.style.bottom = `${Math.max(4, Math.round((cfg.bottom ?? 100) + (cfg.offsetY ?? 0) - off.y))}px`
+      }
+      placeCorner()
       canvas.style.width = `${csize}px`
       canvas.style.height = `${csize}px`
       canvas.style.pointerEvents = 'auto'
@@ -597,25 +602,7 @@ export function Live2DPet(props: Live2DPetProps) {
         /* no Idle group */
       }
 
-      const anchorToComposer = (): void => {
-        if (dragState) return
-        const seat =
-          document.querySelector('[data-composer-seat]') ?? document.querySelector('[data-composer-card]')
-        if (!seat) return
-        const r = seat.getBoundingClientRect()
-        if (!r.width && !r.height) return
-        const off = dragOffsetRef.current
-        const gap = cfg.gap ?? 10
-        canvas.style.left = `${Math.max(4, Math.round(r.left + r.width / 2 - csize / 2 + (cfg.offsetX ?? 0) + off.x))}px`
-        canvas.style.right = 'auto'
-        canvas.style.bottom = `${Math.max(4, Math.round(window.innerHeight - r.top + gap + (cfg.offsetY ?? 0) + off.y))}px`
-      }
-      const anchorLoop = (): void => {
-        if (disposed) return
-        anchorToComposer()
-        anchorRaf = requestAnimationFrame(anchorLoop)
-      }
-      anchorLoop()
+      placeCorner()
 
       onDown = (e: MouseEvent): void => {
         if (e.button !== 0) return
@@ -643,6 +630,7 @@ export function Live2DPet(props: Live2DPetProps) {
         off.y += e.clientY - dragState.startY
         dragState = null
         saveDragOffset()
+        placeCorner()
         canvas.style.cursor = 'grab'
         setDragging(false)
       }
@@ -704,7 +692,6 @@ export function Live2DPet(props: Live2DPetProps) {
     })
     return () => {
       disposed = true
-      cancelAnimationFrame(anchorRaf)
       if (idleReturnTimer.current) clearTimeout(idleReturnTimer.current)
       try {
         if (irisLoop) app?.ticker.remove(irisLoop)
@@ -838,7 +825,7 @@ export function Live2DPet(props: Live2DPetProps) {
     style: {
       position: 'fixed',
       right: `${cfg.right ?? 24}px`,
-      bottom: `${cfg.bottom ?? 20}px`,
+      bottom: `${cfg.bottom ?? 100}px`,
       zIndex: 2147483000,
       pointerEvents: 'auto',
       cursor: 'grab',
