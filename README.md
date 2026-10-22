@@ -1,5 +1,13 @@
 # dsh-live2d-pet
 
+> **本插件已收录到同系列 monorepo：** https://github.com/lizekun793-beep/dsh-plugins/tree/main/dsh-live2d-pet  
+> Canonical install / 推荐安装：
+> ```bash
+> dsh plugin --profile web add "github:lizekun793-beep/dsh-plugins#main&path:/dsh-live2d-pet" --registry=https://registry.npmmirror.com
+> ```
+> 本独立仓库仍作镜像保留。
+
+
 > **Modified fork / 魔改分支** of [`ankesu/dsh-live2d-pet`](https://github.com/ankesu/dsh-live2d-pet) (`feat/tororo`).
 >
 > Original author / 原作者: [ankesu](https://github.com/ankesu) — MIT License (see [`LICENSE`](./LICENSE)).
