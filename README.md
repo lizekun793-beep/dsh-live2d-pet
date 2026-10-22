@@ -68,86 +68,46 @@ Enable the pet from **Settings →「Live2D 宠物」** (or PUT `/pet/live2d/use
 
 ## Install / 安装
 
-All install methods below were verified end-to-end in a clean profile (2026-08-28):
-haru from the npm registry, and each cat branch from GitHub — `pnpm install`
-runs a `prepare` script that builds `lib/client.js` automatically, and the
-bundled `cordis.patch.yml` already points at the right model. Zero extra config.
-
-以下安装方式均已在干净 profile 中完整实测（2026-08-28）：haru 走 npm registry，
-黑白猫走 GitHub 分支——`pnpm install` 会自动执行 `prepare` 构建 `lib/client.js`，
-包内 `cordis.patch.yml` 已默认指向对应模型，零额外配置。
-
-### Option A — npm registry (Haru, default branch) / npm 源安装（Haru 人型，默认）
+**This fork (recommended) / 本仓库（推荐）** — Tororo + settings panel + Cubism desktop boot fix, default branch `main`.
 
 ```bash
-# install / 安装
+# CLI（推荐；Manager 图形界面装 Git 源常报「无法从依赖变更中确定安装了哪一个包」）
+dsh plugin --profile <name> add "github:lizekun793-beep/dsh-live2d-pet#main"
+
+# 或直接在 profile 目录
+cd ~/.dsh/profiles/<name>
+pnpm add "git+https://github.com/lizekun793-beep/dsh-live2d-pet.git#main"
+```
+
+- Profile name is often `web` on a cloud/server install, or `desktop` locally — use yours.
+- 云服务器上 profile 多为 `web`，本机桌面多为 `desktop`，按实际名字替换。
+- After install: restart the profile, hard-refresh, then **Settings →「Live2D 宠物」** → enable → Save.
+- 装完后重启该 profile、硬刷新，再到 **设置 →「Live2D 宠物」** 启用并保存。
+
+### Notes / 注意事项
+
+1. **Manager GUI** — adding a raw `git+https://…` URL in the plugin UI often fails with「无法从依赖变更中确定安装了哪一个包」even when the package installed. Prefer the `dsh plugin … add` CLI above, then `dsh plugin --profile <name> list` to confirm `dsh-live2d-pet` is present.
+   Manager 用 Git URL 点装时容易误报失败；优先用上面的 CLI，再用 `list` 确认。
+2. **pnpm allowBuilds** — if you see `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`, add the exact line it prints to that profile’s `pnpm-workspace.yaml` under `allowBuilds:`, then re-run add.
+   若 prepare 被拦，把报错打印的那一行加进 `allowBuilds:` 后重装。
+3. **Proxy** — GitHub fetches on some servers need `HTTP_PROXY`/`HTTPS_PROXY` (or npm proxy). 云主机拉 GitHub 卡住时配代理。
+
+### Upstream (ankesu) alternatives / 上游原作者安装方式
+
+If you want the unmodified upstream packages instead of this fork:
+
+若要装**未魔改**的上游包（不是本仓库）：
+
+```bash
+# npm Haru
 dsh plugin --profile <name> add dsh-live2d-pet
 
-# or, in the profile dir directly / 或直接在 profile 目录里
-cd ~/.dsh/profiles/<name>
-pnpm add dsh-live2d-pet
-```
-
-- Installs the latest published `dsh-live2d-pet` (haru model). Verified: `0.1.2`.
-- 安装最新发布版 `dsh-live2d-pet`（haru 模型）。已验证：`0.1.2`。
-- ⚠️ **If you previously installed an older version, `pnpm add` may keep the
-  stale lockfile entry (e.g. `0.1.1`). Pin the version to force the update:**
-  `pnpm add dsh-live2d-pet@0.1.2` (or delete `pnpm-lock.yaml` and re-install).
-- ⚠️ 若之前装过旧版，`pnpm add` 可能沿用旧 lock 条目（如 `0.1.1`）。指定版本强制更新：
-  `pnpm add dsh-live2d-pet@0.1.2`（或删掉 `pnpm-lock.yaml` 重装）。
-
-### Option B — GitHub branch: white cat Tororo / Git 分支：白猫 Tororo
-
-```bash
-cd ~/.dsh/profiles/<name>
+# upstream white cat / 上游白猫
 pnpm add "git+https://github.com/ankesu/dsh-live2d-pet.git#feat/tororo"
-```
 
-- White cat **Tororo** (cat client, `PARAM_*` params, parameter-snapshot expressions).
-  Verified: install + build + patch → tororo model, all good.
-- 白猫 **Tororo**（猫版 client，`PARAM_*` 参数 + 参数快照表情）。已验证：安装/构建/patch 全部正常。
-
-### Option C — GitHub branch: black cat Hijiki / Git 分支：黑猫 Hijiki
-
-```bash
-cd ~/.dsh/profiles/<name>
+# upstream black cat / 上游黑猫
 pnpm add "git+https://github.com/ankesu/dsh-live2d-pet.git#feat/hijiki"
 ```
-
-- Black cat **Hijiki** (same cat client, different model path). Verified.
-- 黑猫 **Hijiki**（同一猫版 client，不同模型路径）。已验证。
-
-### Option D — GitHub branch: main (Haru) / Git 分支：main（Haru）
-
-```bash
-cd ~/.dsh/profiles/<name>
-pnpm add "git+https://github.com/ankesu/dsh-live2d-pet.git#main"
-```
-
-- Same as the npm registry build, from source. Verified.
-- 与 npm registry 版相同，从源码装。已验证。
-
-### Notes for git-branch installs / Git 分支安装注意事项
-
-1. **Proxy** — GitHub fetches can stall without one. If installs hang, configure
-   your proxy (e.g. `npm config set proxy http://127.0.0.1:7897` / `https-proxy`),
-   or set `HTTP_PROXY`/`HTTPS_PROXY` env vars for the install command.
-   Git 拉取 GitHub 可能卡住。卡住时配代理（如 `npm config set proxy http://127.0.0.1:7897`
-   与 `https-proxy`），或在安装命令前设 `HTTP_PROXY`/`HTTPS_PROXY` 环境变量。
-2. **pnpm allowBuilds** — pnpm blocks the `prepare` build script by default
-   (supply-chain protection). If you see `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`,
-   add the exact line it prints to `pnpm-workspace.yaml` under `allowBuilds:`.
-   pnpm 默认拦截 `prepare` 构建脚本（供应链保护）。若报
-   `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`，把报错打印的那一行加到
-   `pnpm-workspace.yaml` 的 `allowBuilds:` 下即可。
-3. **Enable the pet** — after install, open Settings →「Live2D 宠物」, enable,
-   and Save (or `localStorage.setItem('dsh-live2d-pet','1')` then reload).
-   装完后到 设置 →「Live2D 宠物」启用并保存（或 Console 执行
-   `localStorage.setItem('dsh-live2d-pet','1')` 后刷新）。
-
-Use a different profile by changing `--profile <name>` (e.g. `test`).
-
-> 换成自己的 profile 只需改 `--profile <name>`（例如测试端 `test`）。
 
 ---
 
