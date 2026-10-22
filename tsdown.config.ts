@@ -53,7 +53,10 @@ export default [
     plugins: [urlShim()],
     outputOptions: {
       entryFileNames: 'client.js',
-      banner: `window.__ModuleLoader__.load({ id: "dsh-live2d-pet", factory: (require) => {`,
+      // Sync-load Cubism core before factory body (and before `var module`/`exports`)
+      // so pixi-live2d-display's window.Live2DCubismCore check passes even if the
+      // host head inject raced or was skipped on a given boot path.
+      banner: `window.__ModuleLoader__.load({ id: "dsh-live2d-pet", factory: (require) => { if(typeof window!=="undefined"&&!window.Live2DCubismCore){try{var __dshCubismXhr=new XMLHttpRequest();__dshCubismXhr.open("GET","/pet/live2d/live2dcubismcore.min.js",false);__dshCubismXhr.send(null);if(__dshCubismXhr.status>=200&&__dshCubismXhr.status<300&&__dshCubismXhr.responseText)(0,eval)(__dshCubismXhr.responseText);}catch(__dshCubismErr){console.error("[dsh-live2d-pet] Cubism core sync load failed",__dshCubismErr);}}`,
       footer: 'return module.exports; } });',
       intro: 'var module = { exports: {} }; var exports = module.exports;',
     },

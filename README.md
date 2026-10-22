@@ -1,47 +1,38 @@
 # dsh-live2d-pet
 
-> A Live2D companion pet for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — renders a Cubism model as a floating companion in the Web UI, with state-driven expressions, mouse tracking, drag repositioning, and a header toggle button.
+> **Modified fork / 魔改分支** of [`ankesu/dsh-live2d-pet`](https://github.com/ankesu/dsh-live2d-pet) (`feat/tororo`).
 >
-> DSH 桌宠 Live2D 插件：在 Web UI 里渲染一个 Cubism 模型作为浮动桌宠，支持状态联动表情、鼠标跟随、拖拽摆位、顶栏一键开关。
+> Original author / 原作者: [ankesu](https://github.com/ankesu) — MIT License (see [`LICENSE`](./LICENSE)).
+> Additional modifications / 额外改动: [lizekun793-beep](https://github.com/lizekun793-beep).
+>
+> A Live2D companion pet for [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) — renders a Cubism model as a floating companion in the Web UI, with state-driven expressions, mouse tracking, drag repositioning, and a settings panel.
+>
+> DSH 桌宠 Live2D 插件：在 Web UI 里渲染一个 Cubism 模型作为浮动桌宠，支持状态联动表情、鼠标跟随、拖拽摆位、设置页开关与配置。
 
-### 🐱 Haru/ 人型（默认分支）
+## Attribution & changes / 来源与改动说明
 
-![preview](docs/preview.png)
+This repository is a derivative of
+[ankesu/dsh-live2d-pet](https://github.com/ankesu/dsh-live2d-pet) (branch
+[`feat/tororo`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo)).
+The upstream MIT copyright notice is retained in [`LICENSE`](./LICENSE).
 
-The bundled official **Haru** sample model ([Live2D Inc.](https://www.live2d.com/)):
+本仓库基于 [ankesu/dsh-live2d-pet](https://github.com/ankesu/dsh-live2d-pet)
+的 [`feat/tororo`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo)
+分支魔改；保留上游 MIT 版权声明（见 [`LICENSE`](./LICENSE)）。
 
-附带官方 Haru 示例模型（© Live2D Inc.）：
+**Changes in this fork / 本 fork 主要改动（0.1.3-local）：**
 
-![haru sample](docs/sample-img-haru-greeter.jpg)
+- **Settings panel / 设置页**：控制改到 Settings →「Live2D 宠物」（开关、模型、大小、偏移、空闲间隔、状态动作），写入 `$DSH_HOME/dsh-live2d-pet/config.json`；已移除顶栏 ✨ 按钮。
+- **Richer Tororo motions / 白猫动作**：接上原样例 Flick / FlickUp / FlickDown，并新增 Think / Happy / Stretch / Sleepy / Curious 短动作，供状态联动与空闲小动作使用。
+- **Cubism core boot fix / Cubism 启动修复**：桌面 Electron 启动时通过 `webserver/index-inject`（`script-src`）注入 `live2dcubismcore.min.js`，并在 client banner 里加同步 XHR 兜底，避免缺 `Live2DCubismCore` 导致插件崩溃。
 
-### 🐱 Tororo Cat pets / 白猫宠物（分支）
+**Bundled Live2D sample models / 附带样例模型：** Haru / Tororo / Hijiki are © Live2D Inc., distributed under the official Live2D sample-model license for testing and demonstration — replace them for production use.
 
-The official **Tororo & Hijiki** cat sample models
-([Live2D Inc.](https://www.live2d.com/en/learn/sample/tororo-hijiki/)) run as
-pets on the [`feat/tororo`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo)
-branch — cats with ear/tail/paw parameters, parameter-snapshot expressions
-(no exp3 files needed), and the sample's `Idle`/`Tap` motions:
-
-官方 **Tororo & Hijiki** 猫示例模型（© Live2D Inc.）在
-[`feat/tororo`](https://github.com/ankesu/dsh-live2d-pet/tree/feat/tororo)
-分支上作为宠物运行——猫有耳朵/尾巴/爪子参数、参数快照表情（无需 exp3 文件）、
-以及自带 Idle/Tap 动作：
-
-![tororo cat pet](docs/tororo-preview.png)
-
-### 🐱 Hijiki Cat pets / 黑猫宠物（分支）
-
-![hijiki cat pet](docs/blackcat.png)
-
-> Switch to a branch for cat pets: / 切到分支即可用猫宠物：
-> - White cat **Tororo**: `git checkout feat/tororo` → `pnpm build` → configure `model: tororo/tororo.model3.json`
-> - Black cat **Hijiki**: `git checkout feat/hijiki` → `pnpm build` → configure `model: hijiki/hijiki.model3.json`
-> (both branches use the same parameter-snapshot client; only the model path differs)
-
----
+附带 Haru / Tororo / Hijiki 样例模型 © Live2D Inc.，按官方样例模型许可仅供测试演示——生产环境请替换为自己的模型。
 
 ## Table of Contents / 目录
 
+- [Attribution & changes / 来源与改动说明](#attribution--changes--来源与改动说明)
 - [Features / 功能](#features--功能)
 - [Cat pets (branch) / 猫宠物（分支）](#cat-pets--猫宠物分支)
 - [Install / 安装](#install--安装)
@@ -66,18 +57,12 @@ branch — cats with ear/tail/paw parameters, parameter-snapshot expressions
 | 🎬 **Idle motion + fidgets** | The model's idle motion runs constantly; random tap motions play as idle micro-antics | 常驻待机动作；空闲时随机播小动作（发呆/挠头） |
 | 🎛️ **Config-driven geometry** | Size / position / offsets come from `cordis.patch.yml` — tweak without rebuilding | 大小/位置/偏移全在 `cordis.patch.yml` 配置，改配置不用重编译 |
 | 🖱️ **Drag repositioning** | Drag the pet anywhere; the offset persists in `localStorage` (with a viewport sanity-clamp against off-screen bugs) | 可拖拽到任意位置，偏移持久化（带防怼出屏幕的钳制） |
-| 💾 **Toggle button & persistence** | A ✨ header button (next to the [dsh-emoji-wallet](https://github.com/ankesu/dsh-emoji-wallet) 💰 button) shows/hides the pet instantly; state survives refreshes & restarts | 顶栏 ✨ 按钮（[dsh-emoji-wallet](https://github.com/ankesu/dsh-emoji-wallet) 钱包 💰 旁边）一键开关，状态跨刷新/重启保留 |
+| 💾 **Settings & persistence** | Enable/configure under Settings →「Live2D 宠物」; overrides persist in `$DSH_HOME/dsh-live2d-pet/config.json` (localStorage still mirrored) | 在设置 →「Live2D 宠物」启用/配置；覆盖写入 `$DSH_HOME/dsh-live2d-pet/config.json`（仍同步 localStorage） |
 | 🔗 **Session state linkage** | Watches the DSH conversation session — deep thinking / sleep / celebrate are time-driven | 监听 DSH 会话——深思考 / 睡觉 / 庆祝等按时间驱动 |
 
-The ✨ toggle button lives in the session header, right next to the 💰 wallet
-button from [dsh-emoji-wallet](https://github.com/ankesu/dsh-emoji-wallet)
-(an optional companion plugin — the pet works fine without it; the wallet just
-happens to sit in the same utilities row):
+Enable the pet from **Settings →「Live2D 宠物」** (or PUT `/pet/live2d/user-config`). The header ✨ toggle from upstream is removed in this fork.
 
-顶栏 ✨ 开关按钮（会话头部，[dsh-emoji-wallet](https://github.com/ankesu/dsh-emoji-wallet)
-钱包 💰 旁边——钱包是可选伴生插件，不装它宠物也完全正常，只是同一个顶栏行里挨着）：
-
-![toggle button](docs/emoji.png)
+在本 fork 中请到 **设置 →「Live2D 宠物」** 启用（或 PUT `/pet/live2d/user-config`）；上游顶栏 ✨ 按钮已移除。
 
 ---
 
@@ -155,11 +140,10 @@ pnpm add "git+https://github.com/ankesu/dsh-live2d-pet.git#main"
    pnpm 默认拦截 `prepare` 构建脚本（供应链保护）。若报
    `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`，把报错打印的那一行加到
    `pnpm-workspace.yaml` 的 `allowBuilds:` 下即可。
-3. **Enable the pet** — after install, the pet does not show until enabled:
-   click the ✨ header button or run `localStorage.setItem('dsh-live2d-pet','1')`
-   in the browser console, then reload.
-   装完后宠物不会自动显示——点顶栏 ✨ 按钮或在浏览器 Console 执行
-   `localStorage.setItem('dsh-live2d-pet','1')`，然后刷新页面。
+3. **Enable the pet** — after install, open Settings →「Live2D 宠物」, enable,
+   and Save (or `localStorage.setItem('dsh-live2d-pet','1')` then reload).
+   装完后到 设置 →「Live2D 宠物」启用并保存（或 Console 执行
+   `localStorage.setItem('dsh-live2d-pet','1')` 后刷新）。
 
 Use a different profile by changing `--profile <name>` (e.g. `test`).
 
@@ -169,10 +153,11 @@ Use a different profile by changing `--profile <name>` (e.g. `test`).
 
 ## Enable / 启用（必读）
 
-> ⚠️ **The model does NOT appear automatically after install.** You must enable
-> it first — either click the ✨ button in the session header, or run one line
-> in the browser console.
-> ⚠️ **装完不会自动显示！** 必须先启用——点顶栏 ✨ 按钮，或在浏览器控制台执行下面这行：
+> ⚠️ **The model does NOT appear automatically after install.** Open
+> **Settings →「Live2D 宠物」**, turn it on, and Save — or enable via user-config /
+> localStorage as below.
+> ⚠️ **装完不会自动显示！** 打开 **设置 →「Live2D 宠物」** 打开开关并保存；或用下面的
+> user-config / localStorage 方式启用：
 
 ```js
 localStorage.setItem('dsh-live2d-pet', '1')
@@ -315,7 +300,7 @@ DSH web page
 ├─ client bundle (lib/client.js, single inlined file)
 │   ├─ pixi.js + pixi-live2d-display/cubism4 (fully inlined)
 │   ├─ Live2DPet component: anchor / drag / expression / motion / mouse tracking
-│   └─ apply(): mount + session-state linkage + ✨ toggle button (slots)
+│   └─ apply(): mount + session-state linkage + settings.section panel
 └─ host routes /pet/live2d/* (prefix, serves model assets)
 ```
 
@@ -399,8 +384,15 @@ The plugin ships model-agnostic tooling under `scripts/`:
 
 ## License / 许可
 
-MIT. The bundled **Haru** model is © Live2D Inc., distributed under its
-official sample-model license for testing — replace it for production use.
+MIT (upstream copyright © ankesu — see [`LICENSE`](./LICENSE)). Additional
+modifications in this fork by [lizekun793-beep](https://github.com/lizekun793-beep).
 
-MIT 许可。附带的 Haru 模型 © Live2D Inc.，按官方样例模型许可随附用于测试——
-生产环境请替换为自己的模型。
+The bundled **Haru / Tororo / Hijiki** sample models are © Live2D Inc.,
+distributed under the official Live2D sample-model license for testing and
+demonstration — replace them for production use.
+
+MIT（上游版权 © ankesu，见 [`LICENSE`](./LICENSE)）。本 fork 额外改动由
+[lizekun793-beep](https://github.com/lizekun793-beep) 完成。
+
+附带 **Haru / Tororo / Hijiki** 样例模型 © Live2D Inc.，按官方样例模型许可仅供
+测试演示——生产环境请替换为自己的模型。

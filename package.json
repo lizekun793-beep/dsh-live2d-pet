@@ -1,7 +1,7 @@
 {
   "name": "dsh-live2d-pet",
-  "version": "0.1.2",
-  "description": "Live2D companion for DeepSeek Harness: render a Cubism model (e.g. the official Haru sample) in the web UI with state-driven expressions and mouse tracking. · DSH 桌宠的 Live2D 渲染插件",
+  "version": "0.1.3-local",
+  "description": "Live2D companion for DeepSeek Harness: render a Cubism model (e.g. the official Haru sample) in the web UI with state-driven expressions and mouse tracking. \u00b7 DSH \u684c\u5ba0\u7684 Live2D \u6e32\u67d3\u63d2\u4ef6",
   "type": "module",
   "main": "lib/index.mjs",
   "files": [
@@ -36,13 +36,13 @@
     }
   },
   "scripts": {
-    "build": "tsdown",
+    "build": "node -r ./scripts/polyfill-withresolvers.cjs ./node_modules/tsdown/dist/run.mjs",
     "prepare": "pnpm build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "pixi.js": "^6.5.10",
     "pixi-live2d-display": "^0.4.0",
+    "pixi.js": "^6.5.10",
     "react": "^18.2.0"
   },
   "devDependencies": {
@@ -50,7 +50,8 @@
     "@types/react": "~18.3.1",
     "react-dom": "^18.2.0",
     "tsdown": "^0.22.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "unrun": "^0.3.1"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
